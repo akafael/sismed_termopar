@@ -1,0 +1,1 @@
+# sismed_termopar
