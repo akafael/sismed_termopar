@@ -59,6 +59,8 @@ serialPorts = instrhwinfo('serial');
 nPorts = length(serialPorts.SerialPorts);
 set(handles.popupmenuPort, 'String', ...
     [{'Select a port'} ; serialPorts.SerialPorts ]);
+set(handles.toggleConnect, 'Value', 0);
+value = get(handles.toggleConnect, 'Value')
 
 handles.isConnected = false;
 handles.port = 'COM3';
@@ -108,6 +110,40 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+
+function toggleConnect_Callback(hObject, eventdata, handles)
+% hObject    handle to ButtonColorbar (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if (get(handles.toggleConnect, 'Value') == 1)
+    set(handles.toggleConnect, 'String', 'Desconectar');
+    handles.toggleConnect = 0;
+    disp('The game is on!');
+else
+   set(handles.toggleConnect, 'String', 'Conectar');
+   set(handles.toggleConnect, 'Value', 1);
+end
+
+
+% --- If Enable == 'on', executes on mouse press in 5 pixel border.
+% --- Otherwise, executes on mouse press in 5 pixel border or over toggleConnect.
+function toggleConnect_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to toggleConnect (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if (get(handles.toggleConnect, 'Value') == 1)
+    set(handles.toggleConnect, 'String', 'Desconectar');
+    handles.toggleConnect = 0;
+    disp('The game is on!');
+elseif (get(handles.toggleConnect, 'Value') == 0)
+   set(handles.toggleConnect, 'String', 'Conectar');
+   set(handles.toggleConnect, 'Value', 1);
+   disp('*sighs*')
+end
+
+
 % --- Executes on button press in pushbutton1.
 function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
@@ -117,11 +153,8 @@ if (handles.isConnected)
     handles.isConnected = false;
     set(handles.pushbutton1,'String','Connect');
  
-    fclose(handles.serialport);
-    %delete(handles.serialport);
-    
-    % Update GUI
-    guidata(hObject, handles);
+    fclose(handles.serialport); 
+    delete(handles.serialport);
 else
     try
         serPortn = get(handles.popupmenuPort, 'Value');
@@ -133,28 +166,24 @@ else
             handles.port = serList{serPortn};
 
             % Try to connect
-            alert = waitbar(0.1,'Conecting to Arduino...');
+            waitbar(connec
             delete(instrfind({'Port'},{handles.port}));
             handles.serialport=serial(handles.port);
-            waitbar(0.3);
             handles.serialport.BaudRate=57600;
-            waitbar(0.7);
             fopen(handles.serialport);
-            waitbar(1);
 
             % Change Status
-            close(alert)
             handles.isConnected = true;
             set(handles.pushbutton1,'String','Disconnect');
 
             % Update GUI
-            guidata(hObject, handles);
-            
-            %axes(handles.axesRaw);
-            plotRawTemp(handles.serialport,handles.axesRaw,handles.axesFilter);
+            axes(handles.axesRaw);
+            plotRawTemp(handles.serialport);
         end
     catch ME
         errordlg('Connection error!');
 		rethrow(ME);
 	end
 end
+% Update handles structure
+guidata(hObject, handles);

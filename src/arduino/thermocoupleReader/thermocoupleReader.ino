@@ -98,9 +98,9 @@ void loop() {
     Serial.print(' ');
     Serial.print(bufferAvgFilter[k]);
     Serial.print(' ');
-    Serial.print(bufferAvgFilter[k]);
+    Serial.print(bufferMvAvgFilter[k]);
     Serial.print(' ');
-    Serial.println(bufferAvgFilter[k]);
+    Serial.println(bufferMvAvgExpFilter[k]);
 
     // Incrementa Contadores
     index = index+1;
