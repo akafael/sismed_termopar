@@ -10,10 +10,6 @@
 
 // Constantes ----------------------------------------------------------------------------------
 
-// Debug
-#define LED 13
-#define TIME_BLINK 200
-
 // Configuração Pinos
 #define PIN_LM35      A0
 #define PIN_MTK01     A1
@@ -45,11 +41,7 @@ float pMvAvgExpFilter[4]; // Pesos Filtro Média Móvel Ponderada
 
 // Setup ---------------------------------------------------------------------------------
 
-void setup() {
-  // Prepara Led para Debug
-  pinMode(LED, OUTPUT);
-  digitalWrite(LED,LOW);
-  
+void setup() {  
   // Inicia Porta Serial
   Serial.begin(57600);
 
@@ -65,8 +57,6 @@ void setup() {
     bufferMvAvgFilter[k] = 0;
     bufferMvAvgExpFilter[k] = 0;
   }
-
-  blink(4);
 
   // Zera Contadores
   index=1;
@@ -104,7 +94,13 @@ void loop() {
     Serial.print(' ');
     Serial.print(rawTemp1);
     Serial.print(' ');
-    Serial.println(bufferMvAvgExpFilter[k]);
+    Serial.print(rawTemp2);
+    Serial.print(' ');
+    Serial.print(bufferAvgFilter[k]);
+    Serial.print(' ');
+    Serial.print(bufferAvgFilter[k]);
+    Serial.print(' ');
+    Serial.println(bufferAvgFilter[k]);
 
     // Incrementa Contadores
     index = index+1;
@@ -157,17 +153,4 @@ void filterMovingAverengeExp(float buffer[],int k){
   bufferMvAvgExpFilter[k] += buffer[a2]*pMvAvgExpFilter[1];
   bufferMvAvgExpFilter[k] += buffer[a1]*pMvAvgExpFilter[2];
   bufferMvAvgExpFilter[k] += buffer[k]*pMvAvgExpFilter[3];
-}
-
-/**
- * Debug Function - Blink Led 'n' times
- * @author Rafael
- */
-void blink(int n){
-  for(k=(n>=0)?n:0;k<n;k++){
-    digitalWrite(LED,HIGH);
-    delay(TIME_BLINK);
-    digitalWrite(LED,LOW);
-    delay(TIME_BLINK);
-  }
 }

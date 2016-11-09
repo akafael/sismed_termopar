@@ -16,7 +16,7 @@ fopen(serialPort);
 
 % Init Variables
 rawMeasure = [0 0 0]
-buffersize = 30;
+buffersize = 300;
 x = zeros(buffersize,3);
 i = 1;
 
@@ -31,6 +31,10 @@ while (~isempty(serialPort))
     
     for n = 1:3
         rawMeasure(n) = str2double(str{n})
+    end
+    
+    for n = 4:6
+        filteredData(n-3) = str2double(str{n})
     end
     
     % Save Data
