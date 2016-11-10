@@ -14,7 +14,7 @@
 #define PIN_LM35      A0
 #define PIN_MTK01     A1
 
-#define INTERVAL      500  //ms
+#define INTERVAL      200  //ms
 #define SIZE_BUFFER   10
 #define SIZE_BUFFER_F 10   // Parâmentro Filtro Média Móvel
 #define ALPHA         0.8  // Parâmentro Filtro Média Móvel Ponderada
@@ -49,13 +49,13 @@ void setup() {
   pinMode(PIN_LM35,INPUT);
   pinMode(PIN_MTK01,INPUT);
 
-  // Zera Buffers
+  // Zera Buffers e Inicia Filtros
   for(k=0;k<SIZE_BUFFER;k++){
-    bufferLM35[k] = 0;
-    bufferMTK01[k] = 0;
+    bufferLM35[k] = analogRead(PIN_LM35);
+    bufferMTK01[k] = analogRead(PIN_MTK01);
     bufferAvgFilter[k] = 0;
-    bufferMvAvgFilter[k] = 0;
-    bufferMvAvgExpFilter[k] = 0;
+    bufferMvAvgFilter[k] = bufferLM35[k];
+    bufferMvAvgExpFilter[k] = bufferLM35[k];
   }
 
   // Zera Contadores
@@ -84,7 +84,7 @@ void loop() {
     // Filtragem
     bufferLM35[k] = rawTemp1;
     bufferMTK01[k] = rawTemp2;
-
+    
     filterAverenge(bufferLM35,index,k);
     filterMovingAverenge(bufferLM35,k);
     filterMovingAverengeExp(bufferLM35,k);
@@ -108,7 +108,7 @@ void loop() {
   }
 }
 
-// Funções Auxliares ---------------------------------------------------------------------
+// Funções Auxiliares ---------------------------------------------------------------------
 
 /**
  * Filtro Média Simples
@@ -149,7 +149,7 @@ void filterMovingAverengeExp(float buffer[],int k){
   int a3 = (k>2)?k-3:SIZE_BUFFER_F+k-3;
 
   // Aplica Filtro
-  bufferMvAvgExpFilter[k] = buffer[a3]*pMvAvgExpFilter[0];
+  bufferMvAvgExpFilter[k] = bufferMvAvgExpFilter[a3]*pMvAvgExpFilter[0];
   bufferMvAvgExpFilter[k] += buffer[a2]*pMvAvgExpFilter[1];
   bufferMvAvgExpFilter[k] += buffer[a1]*pMvAvgExpFilter[2];
   bufferMvAvgExpFilter[k] += buffer[k]*pMvAvgExpFilter[3];
