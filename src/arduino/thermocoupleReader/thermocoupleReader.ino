@@ -32,6 +32,8 @@ int index;                        // Absoluto
 float bufferLM35[SIZE_BUFFER];
 float bufferMTK01[SIZE_BUFFER];
 
+float bufferTemp[SIZE_BUFFER];
+
 // Buffer Dados Filtrados
 float bufferAvgFilter[SIZE_BUFFER];
 float bufferMvAvgFilter[SIZE_BUFFER];
@@ -49,7 +51,7 @@ void setup() {
   pinMode(PIN_LM35,INPUT);
   pinMode(PIN_MTK01,INPUT);
 
-  // Zera Buffers e Inicia Filtros
+  // Inicia Filtros e buffers
   for(k=0;k<SIZE_BUFFER;k++){
     bufferLM35[k] = analogRead(PIN_LM35);
     bufferMTK01[k] = analogRead(PIN_MTK01);
@@ -66,7 +68,7 @@ void setup() {
   pMvAvgExpFilter[0] = pow(ALPHA,3);
   pMvAvgExpFilter[1] = (1-ALPHA)*pow(ALPHA,2);
   pMvAvgExpFilter[2] = (1-ALPHA)*pow(ALPHA,1);
-  pMvAvgExpFilter[0] = (1-ALPHA);
+  pMvAvgExpFilter[3] = (1-ALPHA);
 }
 
 // Loop ----------------------------------------------------------------------------------
