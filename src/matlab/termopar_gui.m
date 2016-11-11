@@ -22,7 +22,7 @@ function varargout = termopar_gui(varargin)
 
 % Edit the above text to modify the response to help termopar_gui
 
-% Last Modified by GUIDE v2.5 09-Nov-2016 13:31:32
+% Last Modified by GUIDE v2.5 09-Nov-2016 23:58:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -63,10 +63,6 @@ set(handles.popupmenuPort, 'String', ...
 handles.isConnected = false;
 handles.port = 'COM3';
 handles.serialport = [];
-
-
-axes(handles.axesFilter);
-plot (sin(0:.1:10))
 
 % Update handles structure
 guidata(hObject, handles);
@@ -120,6 +116,8 @@ if (handles.isConnected)
     fclose(handles.serialport);
     %delete(handles.serialport);
     
+    warndlg(['Arduino Disconnected from ',handles.port])
+    
     % Update GUI
     guidata(hObject, handles);
 else
@@ -157,4 +155,26 @@ else
         errordlg('Connection error!');
 		rethrow(ME);
 	end
+end
+
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: delete(hObject) closes the figure
+delete(hObject);
+
+
+% --- Executes during object deletion, before destroying properties.
+function figure1_DeleteFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if (handles.isConnected)
+    fclose(handles.serialport);
+    
+    warndlg(['Arduino Disconnected from ',handles.port])
 end

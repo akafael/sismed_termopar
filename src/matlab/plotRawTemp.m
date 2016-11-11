@@ -4,8 +4,9 @@ function plotRawTemp(serialPort,axisRaw,axisFilter)
 
     % Init Variables
     rawMeasure = [0 0 0]
-    buffersize = 300;
-    x = zeros(buffersize,3);
+    filteredData = [0 0 0 0]
+    buffersize = 200;
+    x = zeros(buffersize,7);
     i = 1;
 
     % Remove First Line
@@ -21,13 +22,13 @@ function plotRawTemp(serialPort,axisRaw,axisFilter)
             rawMeasure(n) = str2double(str{n})
         end
 
-        for n = 4:6
+        for n = 4:7
             filteredData(n-3) = str2double(str{n})
         end
 
         % Save Data
         x(i,1:3) = rawMeasure;
-        x(i,4:6) = filteredData;
+        x(i,4:7) = filteredData;
         %i = mod(i+1,buffersize)+1
 
         % Plot
@@ -36,15 +37,18 @@ function plotRawTemp(serialPort,axisRaw,axisFilter)
         hold on;
         plot(x(:,3))
         hold off;
-        legend('Raw LM35','Raw MTK-01')
+        legend('Raw LM35','Raw MTK-01','Location','southeast')
         
         axes(axisFilter)
         plot(x(:,4))
         hold on;
         plot(x(:,5))
         plot(x(:,6))
+        plot(x(:,7))
         hold off;
-        legend('F. Média','F. Média Móvel','F. Média Móvel Pond.');
+        legend('F. Média','F. Média Móvel','F. Média Móvel Pond.',...
+              'F. Kalman',...
+            'Location','southeast');
         
         drawnow;
 
