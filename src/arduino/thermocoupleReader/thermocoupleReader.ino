@@ -11,16 +11,16 @@
 // Constantes ----------------------------------------------------------------------------------
 
 // Configuração Pinos
-#define PIN_LM35      A0
-#define PIN_MTK01     A1
+#define PIN_LM35      A1
+#define PIN_MTK01     A0
 
 #define GAIN_LM35      6
 #define GAIN_MTK01     101
 
-#define A_LM35      100*(5/1024)
-#define A_MTK01     410*(5/1024)
+#define A_LM35      50*(5.0/1024)
+#define A_MTK01     41*(5.0/1024)
 
-#define INTERVAL      200  //ms
+#define INTERVAL      500  //ms
 #define SIZE_BUFFER   10
 #define SIZE_BUFFER_F 10   // Parâmentro Filtro Média Móvel
 #define ALPHA         0.8  // Parâmentro Filtro Média Móvel Ponderada
@@ -59,6 +59,8 @@ float pMvAvgExpFilter[4]; // Pesos Filtro Média Móvel Ponderada
 
 float kalman_cov = 10000;  // Parâmetro Filtro de Kalman
 
+float temp, temp1,temp2; // Medidas temperatura
+
 // Setup ---------------------------------------------------------------------------------
 
 void setup() {  
@@ -74,8 +76,13 @@ void setup() {
     bufferLM35[k] = analogRead(PIN_LM35);
     bufferMTK01[k] = analogRead(PIN_MTK01);
     bufferAvgFilter[k] = 0;
-    bufferMvAvgFilter[k] = bufferLM35[k];
-    bufferMvAvgExpFilter[k] = bufferLM35[k];
+
+    temp1 = bufferLM35[k]*A_LM35;   // Temperatura de Referência ( Ambiente )
+    temp2 = bufferMTK01[k]*A_MTK01; // Medida da Variação da Temperatura
+    temp =  temp1 + temp2;       // Compensação por Software
+    
+    bufferMvAvgFilter[k] = temp;
+    bufferMvAvgExpFilter[k] = temp;
   }
 
   // Zera Contadores
@@ -102,15 +109,15 @@ void loop() {
     bufferMTK01[k] = analogRead(PIN_MTK01);
 
     // Calcula a Temperatura
-    float temp1 = bufferLM35[k]*A_LM35;   // Temperatura de Referência ( Ambiente )
-    float temp2 = bufferMTK01[k]*A_MTK01; // Medida da Variação da Temperatura
+    temp1 = bufferLM35[k]*A_LM35;   // Temperatura de Referência ( Ambiente )
+    temp2 = bufferMTK01[k]*A_MTK01; // Medida da Variação da Temperatura
     bufferTemp[k] =  temp1 + temp2;       // Compensação por Software
 
     // Filtragem
-    filterAverenge(bufferLM35,index,k);
-    filterMovingAverenge(bufferLM35,k);
-    filterMovingAverengeExp(bufferLM35,k);
-    filterKalman(bufferLM35,k);
+    filterAverenge(bufferTemp,index,k);
+    filterMovingAverenge(bufferTemp,k);
+    filterMovingAverengeExp(bufferTemp,k);
+    filterKalman(bufferTemp,k);
 
     // Envia via Serial
     Serial.print(lasttime);
@@ -125,7 +132,9 @@ void loop() {
     Serial.print(' ');
     Serial.print(bufferMvAvgExpFilter[k]);
     Serial.print(' ');
-    Serial.println(bufferKalmanFilter[k]);
+    Serial.print(bufferKalmanFilter[k]);
+    Serial.print(' ');
+    Serial.println(bufferTemp[k]);
 
     // Incrementa Contadores
     index = index+1;
