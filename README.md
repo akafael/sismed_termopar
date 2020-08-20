@@ -19,4 +19,5 @@ O Matlab foi utilizado exclusivamente para a interface gráfica e foram implemen
  - Fio
  
 ## Referências
- - http://www.analog.com/media/cn/training-seminars/design-handbooks/temperature_sensors_chapter7.pdf?doc=CN0172.pdf
+ - https://www.analog.com/media/cn/training-seminars/design-handbooks/temperature_sensors_chapter7.pdf?doc=CN0172.pdf
+ - https://archive.org/details/measurementsyste00doeb/
